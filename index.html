@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Negro - Recarga de Monedas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-text">ECO NEGRO</span>
+            </div>
+            <nav class="nav">
+                <a href="#productos">Productos</a>
+                <a href="#como-funciona">Cómo Funciona</a>
+                <a href="#soporte">Soporte</a>
+            </nav>
+            
+            <!-- Botones de autenticación (cuando no está logueado) -->
+            <div id="authButtons" class="auth-buttons">
+                <button class="btn-login" onclick="abrirModalLogin()">Iniciar Sesión</button>
+                <button class="btn-register" onclick="abrirModalRegistro()">Registrarse</button>
+            </div>
+            
+            <!-- Info de usuario (cuando está logueado) -->
+            <div id="userInfo" class="user-info" style="display: none;">
+                <div class="user-coins">
+                    <span class="coins-icon">💰</span>
+                    <span id="coinsDisplay">0</span>
+                </div>
+                <div class="user-name">
+                    <span id="usernameDisplay">Usuario</span>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Salir</button>
+            </div>
+            
+            <button class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Banner Principal -->
+    <section class="banner">
+        <div class="banner-content">
+            <h1 class="banner-title">Recarga tus Monedas</h1>
+            <p class="banner-subtitle">Compra monedas de forma rápida y segura</p>
+            <button class="cta-button" onclick="document.getElementById('productos').scrollIntoView({behavior: 'smooth'})">
+                Ver Paquetes
+            </button>
+        </div>
+        <div class="banner-glow"></div>
+    </section>
+
+    <!-- Sección de Productos -->
+    <section id="productos" class="productos">
+        <div class="container">
+            <h2 class="section-title">Elige tu Paquete</h2>
+            <p class="section-subtitle">Todos los paquetes incluyen monedas extra</p>
+            <div class="productos-grid" id="productosGrid">
+                <!-- Los productos se cargan dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cómo Funciona -->
+    <section id="como-funciona" class="como-funciona">
+        <div class="container">
+            <h2 class="section-title">¿Cómo Funciona?</h2>
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Elige tu paquete</h3>
+                    <p>Selecciona el paquete de monedas que deseas comprar</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Ingresa tu email</h3>
+                    <p>Usa el email registrado en tu cuenta del juego</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Completa el pago</h3>
+                    <p>Paga de forma segura con tu método preferido</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>¡Listo!</h3>
+                    <p>Las monedas se añaden automáticamente a tu cuenta</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Compra -->
+    <div id="modalCompra" class="modal">
+        <div class="modal-overlay" onclick="cerrarModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            <h2 class="modal-title">Completar Compra</h2>
+            
+            <div class="producto-seleccionado" id="productoSeleccionado">
+                <!-- Se llena dinámicamente -->
+            </div>
+
+            <form id="formCompra" class="form-compra">
+                <!-- Campo de email (solo si no está logueado) -->
+                <div class="form-group" id="emailGroup">
+                    <label for="emailJugador">Email registrado en el juego</label>
+                    <input 
+                        type="email" 
+                        id="emailJugador" 
+                        placeholder="tu@email.com"
+                    >
+                    <span class="form-error" id="emailError"></span>
+                </div>
+
+                <!-- Mensaje para usuario logueado -->
+                <div id="loggedUserMessage" style="display: none; background: var(--bg-primary); padding: 15px; border-radius: 10px; border: 2px solid var(--color-primary); margin-bottom: 20px; text-align: center;">
+                    <p style="color: var(--color-primary); font-weight: 700; margin-bottom: 5px;">
+                        Comprando como: <span id="buyingAsUsername"></span>
+                    </p>
+                    <p style="color: var(--color-text-dim); font-size: 14px;">
+                        Las monedas se agregarán a tu cuenta automáticamente
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label>Método de pago</label>
+                    <div class="payment-methods">
+                        <button type="button" class="payment-method active" data-method="stripe">
+                            <span>💳</span>
+                            Tarjeta
+                        </button>
+                        <button type="button" class="payment-method" data-method="paypal">
+                            <span>🅿️</span>
+                            PayPal
+                        </button>
+                    </div>
+                </div>
+
+                <div id="stripePayment" class="payment-section">
+                    <div id="card-element" class="card-element"></div>
+                    <div id="card-errors" class="form-error"></div>
+                </div>
+
+                <div id="paypalPayment" class="payment-section" style="display: none;">
+                    <div id="paypal-button-container"></div>
+                </div>
+
+                <button type="submit" class="submit-button" id="submitButton">
+                    <span class="button-text">CONFIRMAR COMPRA</span>
+                    <span class="button-loader" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Éxito -->
+    <div id="modalExito" class="modal">
+        <div class="modal-overlay" onclick="cerrarModalExito()"></div>
+        <div class="modal-content modal-success">
+            <div class="success-icon">✓</div>
+            <h2>¡Compra Exitosa!</h2>
+            <div id="successMessage"></div>
+            <button class="cta-button" onclick="cerrarModalExito()">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
+    <div id="modalLogin" class="modal">
+        <div class="modal-overlay" onclick="cerrarModalLogin()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModalLogin()">&times;</button>
+            <h2 class="modal-title">Iniciar Sesión</h2>
+            
+            <form id="formLogin" class="form-compra">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="loginEmail" 
+                        placeholder="tu@email.com" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="loginPassword" 
+                        placeholder="••••••••" 
+                        required
+                    >
+                </div>
+
+                <div id="loginError" class="form-error"></div>
+
+                <button type="submit" class="submit-button" id="loginButton">
+                    <span class="button-text">INICIAR SESIÓN</span>
+                    <span class="button-loader" style="display: none;"></span>
+                </button>
+
+                <p style="text-align: center; margin-top: 20px; color: var(--color-text-dim);">
+                    ¿No tienes cuenta? 
+                    <a href="#" onclick="cerrarModalLogin(); abrirModalRegistro(); return false;" 
+                       style="color: var(--color-primary); text-decoration: none; font-weight: 700;">
+                        Regístrate aquí
+                    </a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div id="modalRegistro" class="modal">
+        <div class="modal-overlay" onclick="cerrarModalRegistro()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModalRegistro()">&times;</button>
+            <h2 class="modal-title">Crear Cuenta</h2>
+            
+            <form id="formRegistro" class="form-compra">
+                <div class="form-group">
+                    <label for="registerUsername">Nombre de Usuario</label>
+                    <input 
+                        type="text" 
+                        id="registerUsername" 
+                        placeholder="Tu nombre en el juego" 
+                        required
+                        minlength="3"
+                        maxlength="20"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="registerEmail" 
+                        placeholder="tu@email.com" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="registerPassword" 
+                        placeholder="Mínimo 6 caracteres" 
+                        required
+                        minlength="6"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirmar Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="registerPasswordConfirm" 
+                        placeholder="Repite tu contraseña" 
+                        required
+                    >
+                </div>
+
+                <div id="registerError" class="form-error"></div>
+
+                <button type="submit" class="submit-button" id="registerButton">
+                    <span class="button-text">CREAR CUENTA</span>
+                    <span class="button-loader" style="display: none;"></span>
+                </button>
+
+                <p style="text-align: center; margin-top: 20px; color: var(--color-text-dim);">
+                    ¿Ya tienes cuenta? 
+                    <a href="#" onclick="cerrarModalRegistro(); abrirModalLogin(); return false;" 
+                       style="color: var(--color-primary); text-decoration: none; font-weight: 700;">
+                        Inicia sesión aquí
+                    </a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Eco Negro. Todos los derechos reservados.</p>
+                <div class="footer-links">
+                    <a href="#terminos">Términos y Condiciones</a>
+                    <a href="#privacidad">Política de Privacidad</a>
+                    <a href="#contacto">Contacto</a>
+                </div>
+                <div class="payment-logos">
+                    <span>Métodos de pago: 💳 Visa | Mastercard | PayPal</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="js/productos.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

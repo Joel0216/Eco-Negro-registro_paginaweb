@@ -19,6 +19,7 @@
             <nav class="nav">
                 <a href="#productos">Productos</a>
                 <a href="#como-funciona">Cómo Funciona</a>
+                <a href="#" onclick="abrirHistorial(); return false;" id="historialLink" style="display: none;">Historial</a>
                 <a href="#soporte">Soporte</a>
             </nav>
             
@@ -136,7 +137,7 @@
                 <div class="form-group">
                     <label>Método de pago</label>
                     <div class="payment-methods">
-                        <button type="button" class="payment-method active" data-method="stripe">
+                        <button type="button" class="payment-method active" data-method="card">
                             <span>💳</span>
                             Tarjeta
                         </button>
@@ -144,16 +145,62 @@
                             <span>🅿️</span>
                             PayPal
                         </button>
+                        <button type="button" class="payment-method" data-method="mercadopago">
+                            <span>💙</span>
+                            Mercado Pago
+                        </button>
                     </div>
                 </div>
 
-                <div id="stripePayment" class="payment-section">
-                    <div id="card-element" class="card-element"></div>
+                <div id="cardPayment" class="payment-section">
+                    <div class="form-group">
+                        <label for="cardNumber">Número de Tarjeta</label>
+                        <input 
+                            type="text" 
+                            id="cardNumber" 
+                            placeholder="1234 5678 9012 3456"
+                            maxlength="19"
+                        >
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="cardExpiry">Expiración</label>
+                            <input 
+                                type="text" 
+                                id="cardExpiry" 
+                                placeholder="MM/AA"
+                                maxlength="5"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCvv">CVV</label>
+                            <input 
+                                type="text" 
+                                id="cardCvv" 
+                                placeholder="123"
+                                maxlength="4"
+                            >
+                        </div>
+                    </div>
                     <div id="card-errors" class="form-error"></div>
                 </div>
 
                 <div id="paypalPayment" class="payment-section" style="display: none;">
-                    <div id="paypal-button-container"></div>
+                    <div style="background: var(--bg-primary); padding: 20px; border-radius: 10px; text-align: center;">
+                        <p style="color: var(--color-text-dim); margin-bottom: 10px;">
+                            Serás redirigido a PayPal para completar el pago
+                        </p>
+                        <div style="font-size: 48px;">🅿️</div>
+                    </div>
+                </div>
+
+                <div id="mercadopagoPayment" class="payment-section" style="display: none;">
+                    <div style="background: var(--bg-primary); padding: 20px; border-radius: 10px; text-align: center;">
+                        <p style="color: var(--color-text-dim); margin-bottom: 10px;">
+                            Serás redirigido a Mercado Pago para completar el pago
+                        </p>
+                        <div style="font-size: 48px;">💙</div>
+                    </div>
                 </div>
 
                 <button type="submit" class="submit-button" id="submitButton">
@@ -307,12 +354,28 @@
         </div>
     </footer>
 
+    <!-- Modal de Historial -->
+    <div id="modalHistorial" class="modal">
+        <div class="modal-overlay" onclick="cerrarHistorial()"></div>
+        <div class="modal-content" style="max-width: 800px;">
+            <button class="modal-close" onclick="cerrarHistorial()">&times;</button>
+            <h2 class="modal-title">Historial de Compras</h2>
+            
+            <!-- Estadísticas -->
+            <div id="statsContainer" style="margin-bottom: 30px;"></div>
+            
+            <!-- Lista de transacciones -->
+            <div id="historialContainer"></div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://js.stripe.com/v3/"></script>
     <script src="js/productos.js"></script>
     <script src="js/supabase.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/payment.js"></script>
+    <script src="js/historial.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

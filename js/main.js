@@ -2,7 +2,7 @@
 let productoSeleccionado = null;
 let stripe = null;
 let cardElement = null;
-let metodoPagoActual = 'stripe';
+let metodoPagoActual = 'card';
 
 // Inicializar Stripe (usa tu clave pública de prueba)
 const STRIPE_PUBLIC_KEY = 'pk_test_TU_CLAVE_PUBLICA'; // Reemplazar con tu clave
@@ -134,15 +134,49 @@ function configurarEventos() {
             metodoPagoActual = method.dataset.method;
             
             // Mostrar/ocultar secciones de pago
-            if (metodoPagoActual === 'stripe') {
-                document.getElementById('stripePayment').style.display = 'block';
-                document.getElementById('paypalPayment').style.display = 'none';
-            } else {
-                document.getElementById('stripePayment').style.display = 'none';
+            document.getElementById('cardPayment').style.display = 'none';
+            document.getElementById('paypalPayment').style.display = 'none';
+            document.getElementById('mercadopagoPayment').style.display = 'none';
+            
+            if (metodoPagoActual === 'card') {
+                document.getElementById('cardPayment').style.display = 'block';
+            } else if (metodoPagoActual === 'paypal') {
                 document.getElementById('paypalPayment').style.display = 'block';
+            } else if (metodoPagoActual === 'mercadopago') {
+                document.getElementById('mercadopagoPayment').style.display = 'block';
             }
         });
     });
+    
+    // Formatear número de tarjeta
+    const cardNumber = document.getElementById('cardNumber');
+    if (cardNumber) {
+        cardNumber.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+    }
+    
+    // Formatear fecha de expiración
+    const cardExpiry = document.getElementById('cardExpiry');
+    if (cardExpiry) {
+        cardExpiry.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Solo números en CVV
+    const cardCvv = document.getElementById('cardCvv');
+    if (cardCvv) {
+        cardCvv.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    }
     
     // Formulario de compra
     document.getElementById('formCompra').addEventListener('submit', procesarCompra);
@@ -170,6 +204,7 @@ async function procesarCompraSinLogin() {
     const submitButton = document.getElementById('submitButton');
     const buttonText = submitButton.querySelector('.button-text');
     const buttonLoader = submitButton.querySelector('.button-loader');
+    const cardErrors = document.getElementById('card-errors');
     
     // Validar email
     if (!validarEmail(email)) {
@@ -177,9 +212,24 @@ async function procesarCompraSinLogin() {
         return;
     }
     
+    // Validar datos de pago si es tarjeta
+    if (metodoPagoActual === 'card') {
+        const cardNumber = document.getElementById('cardNumber').value;
+        const cardExpiry = document.getElementById('cardExpiry').value;
+        const cardCvv = document.getElementById('cardCvv').value;
+        
+        const validacion = validarDatosTarjeta(cardNumber, cardCvv, cardExpiry);
+        if (!validacion.valid) {
+            cardErrors.textContent = validacion.error;
+            cardErrors.classList.add('active');
+            return;
+        }
+        cardErrors.classList.remove('active');
+    }
+    
     // Deshabilitar botón
     submitButton.disabled = true;
-    buttonText.style.display = 'none';
+    buttonText.textContent = 'PROCESANDO...';
     buttonLoader.style.display = 'inline-block';
     
     try {
@@ -191,8 +241,12 @@ async function procesarCompraSinLogin() {
             return;
         }
         
-        // 2. Simular procesamiento de pago
-        await simularPago();
+        // 2. Procesar pago
+        const resultadoPago = await procesarPago(metodoPagoActual, productoSeleccionado, jugador.data);
+        
+        if (!resultadoPago.success) {
+            throw new Error(resultadoPago.error || 'Error al procesar el pago');
+        }
         
         // 3. Actualizar monedas
         const resultado = await actualizarMonedas(email, productoSeleccionado.monedas);
@@ -205,7 +259,9 @@ async function procesarCompraSinLogin() {
         await registrarTransaccion(
             jugador.data.user_id,
             productoSeleccionado,
-            metodoPagoActual
+            resultadoPago.method,
+            resultadoPago.paymentId,
+            'completed'
         );
         
         // 5. Mostrar éxito
@@ -214,11 +270,11 @@ async function procesarCompraSinLogin() {
         
     } catch (error) {
         console.error('Error en la compra:', error);
-        alert('Error al procesar la compra: ' + error.message);
+        alert('❌ ' + error.message);
     } finally {
         // Rehabilitar botón
         submitButton.disabled = false;
-        buttonText.style.display = 'inline';
+        buttonText.textContent = 'CONFIRMAR COMPRA';
         buttonLoader.style.display = 'none';
     }
 }
@@ -393,12 +449,28 @@ document.getElementById('formRegistro')?.addEventListener('submit', async (e) =>
         
         // Éxito
         cerrarModalRegistro();
-        alert(resultado.message || '¡Cuenta creada exitosamente!');
         
-        // Abrir modal de login
-        setTimeout(() => {
-            abrirModalLogin();
-        }, 500);
+        // Si no necesita confirmación, iniciar sesión automáticamente
+        if (!resultado.needsConfirmation) {
+            alert('¡Cuenta creada! Iniciando sesión...');
+            
+            // Iniciar sesión automáticamente
+            setTimeout(async () => {
+                const loginResult = await iniciarSesion(email, password);
+                if (loginResult.data) {
+                    mostrarUsuarioLogueado(loginResult.data.user);
+                    alert(`¡Bienvenido ${loginResult.data.player.username}! Tienes ${loginResult.data.player.coins} monedas.`);
+                } else {
+                    // Si falla el auto-login, mostrar modal de login
+                    abrirModalLogin();
+                }
+            }, 500);
+        } else {
+            alert(resultado.message || '¡Cuenta creada! Revisa tu email para confirmar.');
+            setTimeout(() => {
+                abrirModalLogin();
+            }, 500);
+        }
         
     } catch (error) {
         errorDiv.textContent = 'Error al crear la cuenta';
@@ -439,15 +511,35 @@ async function procesarCompraLogueado() {
     const submitButton = document.getElementById('submitButton');
     const buttonText = submitButton.querySelector('.button-text');
     const buttonLoader = submitButton.querySelector('.button-loader');
+    const cardErrors = document.getElementById('card-errors');
+    
+    // Validar datos de pago si es tarjeta
+    if (metodoPagoActual === 'card') {
+        const cardNumber = document.getElementById('cardNumber').value;
+        const cardExpiry = document.getElementById('cardExpiry').value;
+        const cardCvv = document.getElementById('cardCvv').value;
+        
+        const validacion = validarDatosTarjeta(cardNumber, cardCvv, cardExpiry);
+        if (!validacion.valid) {
+            cardErrors.textContent = validacion.error;
+            cardErrors.classList.add('active');
+            return;
+        }
+        cardErrors.classList.remove('active');
+    }
     
     // Deshabilitar botón
     submitButton.disabled = true;
-    buttonText.style.display = 'none';
+    buttonText.textContent = 'PROCESANDO...';
     buttonLoader.style.display = 'inline-block';
     
     try {
-        // Simular procesamiento de pago
-        await simularPago();
+        // Procesar pago con la pasarela simulada
+        const resultadoPago = await procesarPago(metodoPagoActual, productoSeleccionado, jugador);
+        
+        if (!resultadoPago.success) {
+            throw new Error(resultadoPago.error || 'Error al procesar el pago');
+        }
         
         // Actualizar monedas
         const resultado = await actualizarMonedas(jugador.email, productoSeleccionado.monedas);
@@ -460,7 +552,9 @@ async function procesarCompraLogueado() {
         await registrarTransaccion(
             jugador.user_id,
             productoSeleccionado,
-            metodoPagoActual
+            resultadoPago.method,
+            resultadoPago.paymentId,
+            'completed'
         );
         
         // Actualizar UI
@@ -472,10 +566,44 @@ async function procesarCompraLogueado() {
         
     } catch (error) {
         console.error('Error en la compra:', error);
-        alert('Error al procesar la compra: ' + error.message);
+        alert('❌ ' + error.message);
     } finally {
         submitButton.disabled = false;
-        buttonText.style.display = 'inline';
+        buttonText.textContent = 'CONFIRMAR COMPRA';
         buttonLoader.style.display = 'none';
+    }
+}
+
+
+// ========== FUNCIONES DE HISTORIAL ==========
+
+// Abrir modal de historial
+async function abrirHistorial() {
+    const usuario = await obtenerUsuarioActual();
+    
+    if (!usuario) {
+        alert('Debes iniciar sesión para ver tu historial');
+        abrirModalLogin();
+        return;
+    }
+    
+    document.getElementById('modalHistorial').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Cargar historial
+    await renderizarHistorial(usuario.id);
+}
+
+// Cerrar modal de historial
+function cerrarHistorial() {
+    document.getElementById('modalHistorial').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Mostrar/ocultar link de historial según login
+function actualizarLinkHistorial(mostrar) {
+    const historialLink = document.getElementById('historialLink');
+    if (historialLink) {
+        historialLink.style.display = mostrar ? 'block' : 'none';
     }
 }

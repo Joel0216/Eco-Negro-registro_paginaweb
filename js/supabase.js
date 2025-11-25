@@ -57,20 +57,32 @@ async function actualizarMonedas(email, monedasAAgregar) {
     }
 }
 
-// Registrar transacción
-async function registrarTransaccion(userId, producto, metodoPago, estado = 'completed') {
+// Registrar transacción (compatible con tu estructura)
+async function registrarTransaccion(userId, producto, metodoPago, paymentId, estado = 'completed') {
     try {
+        const transaccion = {
+            user_id: userId,
+            product_id: producto.id,
+            product_name: producto.nombre,
+            amount: producto.precio,
+            currency: 'USD',
+            status: estado,
+            payment_method: metodoPago
+        };
+        
+        // Agregar campos opcionales si existen
+        if (paymentId) {
+            transaccion.payment_id = paymentId;
+        }
+        
+        // Agregar coins_amount si la columna existe
+        if (producto.monedas) {
+            transaccion.coins_amount = producto.monedas;
+        }
+
         const { data, error } = await supabase
             .from('transactions')
-            .insert({
-                user_id: userId,
-                product_id: producto.id,
-                product_name: producto.nombre,
-                amount: producto.precio,
-                currency: 'USD',
-                status: estado,
-                payment_method: metodoPago
-            })
+            .insert(transaccion)
             .select();
 
         if (error) throw error;

@@ -165,39 +165,21 @@ async function cerrarSesion() {
 }
 
 // Mostrar usuario logueado en el header
-function mostrarUsuarioLogueado(user) {
-    const authButtons = document.getElementById('authButtons');
-    const userInfo = document.getElementById('userInfo');
+async function mostrarUsuarioLogueado(user) {
+    // Cargar datos del jugador
+    const jugador = await cargarDatosJugador(user.id);
     
-    if (authButtons && userInfo) {
-        authButtons.style.display = 'none';
-        userInfo.style.display = 'flex';
-        
-        // Cargar datos del jugador
-        cargarDatosJugador(user.id);
-        
-        // Mostrar links de usuario
-        if (typeof actualizarLinksUsuario === 'function') {
-            actualizarLinksUsuario(true);
-        } else if (typeof actualizarLinkHistorial === 'function') {
-            actualizarLinkHistorial(true);
-        }
+    // Actualizar menú de usuario
+    if (typeof actualizarMenuUsuario === 'function' && jugador) {
+        actualizarMenuUsuario(true, jugador);
     }
 }
 
 // Ocultar usuario logueado
 function ocultarUsuarioLogueado() {
-    const authButtons = document.getElementById('authButtons');
-    const userInfo = document.getElementById('userInfo');
-    
-    if (authButtons && userInfo) {
-        authButtons.style.display = 'flex';
-        userInfo.style.display = 'none';
-    }
-    
-    // Ocultar links de usuario
-    if (typeof actualizarLinksUsuario === 'function') {
-        actualizarLinksUsuario(false);
+    // Actualizar menú de usuario
+    if (typeof actualizarMenuUsuario === 'function') {
+        actualizarMenuUsuario(false);
     } else if (typeof actualizarLinkHistorial === 'function') {
         actualizarLinkHistorial(false);
     }
@@ -217,15 +199,14 @@ async function cargarDatosJugador(userId) {
         
         if (error) throw error;
         
-        // Actualizar UI con datos del jugador
-        document.getElementById('usernameDisplay').textContent = data.username;
-        document.getElementById('coinsDisplay').textContent = data.coins.toLocaleString();
-        
         // Guardar en variable global
         window.jugadorActual = data;
         
+        return data;
+        
     } catch (error) {
         console.error('Error cargando datos del jugador:', error);
+        return null;
     }
 }
 

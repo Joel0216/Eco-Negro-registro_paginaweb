@@ -153,7 +153,10 @@ async function comprarObjeto() {
         }
         
         // Actualizar UI
-        await cargarDatosJugador(usuario.id);
+        const datosActualizados = await cargarDatosJugador(usuario.id);
+        if (datosActualizados && typeof actualizarMenuUsuario === 'function') {
+            actualizarMenuUsuario(true, datosActualizados);
+        }
         
         // Mostrar éxito
         alert(`✅ ¡${objetoSeleccionado.nombre} comprado exitosamente!\n\nNuevas monedas: ${resultado.data.nuevasMonedas} 💰`);

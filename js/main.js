@@ -616,7 +616,10 @@ async function procesarCompraLogueado() {
         );
         
         // Actualizar UI
-        await cargarDatosJugador(jugador.user_id);
+        const datosActualizados = await cargarDatosJugador(jugador.user_id);
+        if (datosActualizados && typeof actualizarMenuUsuario === 'function') {
+            actualizarMenuUsuario(true, datosActualizados);
+        }
         
         // Mostrar éxito
         mostrarExito(resultado.data);
@@ -663,5 +666,60 @@ function actualizarLinkHistorial(mostrar) {
     const historialLink = document.getElementById('historialLink');
     if (historialLink) {
         historialLink.style.display = mostrar ? 'block' : 'none';
+    }
+}
+
+
+// ========== FUNCIONES DEL MENÚ DE USUARIO ==========
+
+// Toggle del menú desplegable
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.style.display = 'none';
+    }
+}
+
+// Cerrar el menú si se hace clic fuera de él
+document.addEventListener('click', (e) => {
+    const userMenu = document.querySelector('.user-menu-container');
+    const dropdown = document.getElementById('userDropdown');
+    
+    if (userMenu && dropdown && !userMenu.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+// Actualizar el menú según el estado de autenticación
+function actualizarMenuUsuario(logueado, datosUsuario = null) {
+    const menuGuest = document.getElementById('userMenuGuest');
+    const menuLogged = document.getElementById('userMenuLogged');
+    const dropdownGuest = document.getElementById('dropdownGuest');
+    const dropdownLogged = document.getElementById('dropdownLogged');
+    const dropdown = document.getElementById('userDropdown');
+    
+    // Cerrar dropdown
+    dropdown.style.display = 'none';
+    
+    if (logueado && datosUsuario) {
+        // Usuario logueado
+        menuGuest.style.display = 'none';
+        menuLogged.style.display = 'flex';
+        dropdownGuest.style.display = 'none';
+        dropdownLogged.style.display = 'block';
+        
+        // Actualizar datos del usuario
+        document.getElementById('usernameDisplay').textContent = datosUsuario.username;
+        document.getElementById('dropdownUsername').textContent = datosUsuario.username;
+        document.getElementById('coinsDisplay').textContent = datosUsuario.coins.toLocaleString();
+    } else {
+        // Usuario no logueado
+        menuGuest.style.display = 'block';
+        menuLogged.style.display = 'none';
+        dropdownGuest.style.display = 'block';
+        dropdownLogged.style.display = 'none';
     }
 }

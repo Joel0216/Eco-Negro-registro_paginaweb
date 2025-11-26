@@ -1154,3 +1154,192 @@ body {
         gap: 10px;
     }
 }
+
+
+/* ========== MENÚ DE USUARIO DESPLEGABLE ========== */
+
+.user-menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Botón de icono de usuario */
+.user-icon-btn {
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--color-primary);
+    padding: 0;
+}
+
+.user-icon-btn:hover {
+    background: var(--color-primary);
+    color: var(--bg-primary);
+    box-shadow: var(--glow-primary);
+    transform: scale(1.05);
+}
+
+.user-icon-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Usuario logueado con nombre */
+.user-menu-logged .user-icon-btn {
+    width: auto;
+    border-radius: 25px;
+    padding: 8px 15px;
+    gap: 10px;
+}
+
+.user-name-display {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Display de monedas */
+.user-coins-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 2px solid var(--color-primary);
+    font-weight: 900;
+    color: var(--color-primary);
+}
+
+.user-coins-display .coins-icon {
+    font-size: 20px;
+}
+
+/* Dropdown Menu */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--bg-surface);
+    border: 2px solid var(--color-primary);
+    border-radius: 15px;
+    min-width: 250px;
+    box-shadow: 0 10px 40px rgba(0, 255, 65, 0.3);
+    z-index: 1000;
+    animation: dropdownSlideIn 0.3s ease-out;
+}
+
+@keyframes dropdownSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-content {
+    padding: 10px;
+}
+
+.dropdown-header {
+    padding: 15px;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+    margin-bottom: 5px;
+}
+
+.dropdown-header span {
+    font-weight: 900;
+    color: var(--color-primary);
+    font-size: 16px;
+}
+
+.dropdown-item {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-text);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s;
+    text-align: left;
+}
+
+.dropdown-item:hover {
+    background: rgba(0, 255, 65, 0.1);
+    color: var(--color-primary);
+    transform: translateX(5px);
+}
+
+.dropdown-item svg {
+    flex-shrink: 0;
+    color: var(--color-primary);
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: rgba(0, 255, 65, 0.2);
+    margin: 5px 0;
+}
+
+.logout-item {
+    color: var(--color-error);
+}
+
+.logout-item svg {
+    color: var(--color-error);
+}
+
+.logout-item:hover {
+    background: rgba(255, 51, 102, 0.1);
+    color: var(--color-error);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .user-menu-logged .user-icon-btn {
+        padding: 8px 12px;
+    }
+    
+    .user-name-display {
+        display: none;
+    }
+    
+    .user-coins-display {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .user-dropdown {
+        right: -10px;
+        min-width: 220px;
+    }
+}
+
+/* Ocultar elementos antiguos que ya no se usan */
+.auth-buttons {
+    display: none !important;
+}
+
+.user-info {
+    display: none !important;
+}

@@ -93,3 +93,125 @@ async function registrarTransaccion(userId, producto, metodoPago, paymentId, est
         return { error: 'Error al registrar la transacción.' };
     }
 }
+
+
+// ========== FUNCIONES PARA OBJETOS E INVENTARIO ==========
+
+// Comprar objeto con monedas
+async function comprarObjetoConMonedas(userId, objeto) {
+    try {
+        // 1. Obtener jugador actual
+        const { data: jugador, error: errorJugador } = await supabase
+            .from('players')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        if (errorJugador) throw errorJugador;
+
+        // 2. Verificar si tiene suficientes monedas
+        if (jugador.coins < objeto.precio) {
+            return { 
+                error: `No tienes suficientes monedas. Necesitas ${objeto.precio} monedas pero solo tienes ${jugador.coins}.` 
+            };
+        }
+
+        // 3. Restar monedas
+        const nuevasMonedas = jugador.coins - objeto.precio;
+        const { error: errorUpdate } = await supabase
+            .from('players')
+            .update({ 
+                coins: nuevasMonedas,
+                updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId);
+
+        if (errorUpdate) throw errorUpdate;
+
+        // 4. Agregar al inventario
+        const { data: inventario, error: errorInventario } = await supabase
+            .from('player_inventory')
+            .insert({
+                user_id: userId,
+                object_id: objeto.id,
+                object_name: objeto.nombre,
+                quantity: 1
+            })
+            .select();
+
+        if (errorInventario) {
+            // Si ya existe, incrementar cantidad
+            if (errorInventario.code === '23505') {
+                const { data: updated, error: errorIncrement } = await supabase
+                    .from('player_inventory')
+                    .update({ 
+                        quantity: supabase.raw('quantity + 1'),
+                        purchased_at: new Date().toISOString()
+                    })
+                    .eq('user_id', userId)
+                    .eq('object_id', objeto.id)
+                    .select();
+
+                if (errorIncrement) throw errorIncrement;
+                
+                return { 
+                    data: { 
+                        ...updated[0], 
+                        nuevasMonedas,
+                        monedasGastadas: objeto.precio 
+                    } 
+                };
+            }
+            throw errorInventario;
+        }
+
+        return { 
+            data: { 
+                ...inventario[0], 
+                nuevasMonedas,
+                monedasGastadas: objeto.precio 
+            } 
+        };
+
+    } catch (error) {
+        console.error('Error comprando objeto:', error);
+        return { error: 'Error al comprar el objeto. Intenta de nuevo.' };
+    }
+}
+
+// Obtener inventario del jugador
+async function obtenerInventario(userId) {
+    try {
+        const { data, error } = await supabase
+            .from('player_inventory')
+            .select('*')
+            .eq('user_id', userId)
+            .order('purchased_at', { ascending: false });
+
+        if (error) throw error;
+
+        return { data };
+    } catch (error) {
+        console.error('Error obteniendo inventario:', error);
+        return { error: 'Error al cargar el inventario.' };
+    }
+}
+
+// Verificar si el jugador tiene un objeto
+async function tieneObjeto(userId, objectId) {
+    try {
+        const { data, error } = await supabase
+            .from('player_inventory')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('object_id', objectId)
+            .single();
+
+        if (error && error.code !== 'PGRST116') throw error;
+
+        return { tiene: !!data, data };
+    } catch (error) {
+        console.error('Error verificando objeto:', error);
+        return { tiene: false };
+    }
+}

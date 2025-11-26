@@ -4,24 +4,76 @@ let stripe = null;
 let cardElement = null;
 let metodoPagoActual = 'card';
 
-// Inicializar Stripe (usa tu clave pública de prueba)
-const STRIPE_PUBLIC_KEY = 'pk_test_TU_CLAVE_PUBLICA'; // Reemplazar con tu clave
-
-// Cargar productos al iniciar
-document.addEventListener('DOMContentLoaded', () => {
-    cargarProductos();
-    inicializarStripe();
-    configurarEventos();
+// Inicialización principal
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 Inicializando aplicación...');
+    
+    try {
+        // Esperar un momento para asegurar que todo esté cargado
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Verificar que productos esté definido
+        if (typeof productos === 'undefined') {
+            console.error('❌ ERROR: productos no está definido');
+            alert('Error: No se pudieron cargar los productos. Recarga la página.');
+            return;
+        }
+        
+        console.log('✅ Productos disponibles:', productos.length);
+        
+        // Cargar productos de paquetes
+        cargarProductos();
+        
+        // Cargar objetos de la tienda
+        if (typeof cargarObjetos === 'function') {
+            console.log('✅ Cargando objetos de la tienda...');
+            cargarObjetos();
+        } else {
+            console.warn('⚠️ cargarObjetos no está definido');
+        }
+        
+        // Inicializar Stripe
+        inicializarStripe();
+        
+        // Configurar eventos
+        configurarEventos();
+        
+        // Configurar formularios de autenticación
+        configurarFormulariosAuth();
+        
+        // Verificar sesión
+        await verificarSesion();
+        
+        console.log('✅ Aplicación inicializada correctamente');
+    } catch (error) {
+        console.error('❌ Error inicializando aplicación:', error);
+        alert('Error al inicializar la aplicación: ' + error.message);
+    }
 });
 
 // Cargar productos en el grid
 function cargarProductos() {
+    console.log('📦 Iniciando carga de productos...');
+    
     const grid = document.getElementById('productosGrid');
     
-    productos.forEach(producto => {
+    if (!grid) {
+        console.error('❌ No se encontró el elemento productosGrid');
+        return;
+    }
+    
+    console.log('✅ Grid encontrado');
+    console.log('📦 Total de productos a cargar:', productos.length);
+    
+    grid.innerHTML = ''; // Limpiar grid antes de cargar
+    
+    productos.forEach((producto, index) => {
+        console.log(`  ${index + 1}. Cargando: ${producto.nombre}`);
         const card = crearCardProducto(producto);
         grid.appendChild(card);
     });
+    
+    console.log('✅ Productos cargados exitosamente en el DOM');
 }
 
 // Crear card de producto
@@ -363,9 +415,13 @@ function cerrarModalRegistro() {
     document.getElementById('registerError').classList.remove('active');
 }
 
-// Manejar login
-document.getElementById('formLogin')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
+// Configurar formularios de autenticación
+function configurarFormulariosAuth() {
+    // Manejar login
+    const formLogin = document.getElementById('formLogin');
+    if (formLogin) {
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
     
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -404,11 +460,14 @@ document.getElementById('formLogin')?.addEventListener('submit', async (e) => {
         buttonText.style.display = 'inline';
         buttonLoader.style.display = 'none';
     }
-});
+        });
+    }
 
-// Manejar registro
-document.getElementById('formRegistro')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    // Manejar registro
+    const formRegistro = document.getElementById('formRegistro');
+    if (formRegistro) {
+        formRegistro.addEventListener('submit', async (e) => {
+            e.preventDefault();
     
     const username = document.getElementById('registerUsername').value.trim();
     const email = document.getElementById('registerEmail').value.trim();
@@ -480,7 +539,9 @@ document.getElementById('formRegistro')?.addEventListener('submit', async (e) =>
         buttonText.style.display = 'inline';
         buttonLoader.style.display = 'none';
     }
-});
+        });
+    }
+}
 
 // Manejar logout
 async function handleLogout() {
@@ -493,10 +554,7 @@ async function handleLogout() {
     }
 }
 
-// Verificar sesión al cargar la página
-document.addEventListener('DOMContentLoaded', async () => {
-    await verificarSesion();
-});
+
 
 // Modificar la función de procesar compra para usar el usuario logueado
 async function procesarCompraLogueado() {

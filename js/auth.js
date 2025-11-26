@@ -176,8 +176,12 @@ function mostrarUsuarioLogueado(user) {
         // Cargar datos del jugador
         cargarDatosJugador(user.id);
         
-        // Mostrar link de historial
-        actualizarLinkHistorial(true);
+        // Mostrar links de usuario
+        if (typeof actualizarLinksUsuario === 'function') {
+            actualizarLinksUsuario(true);
+        } else if (typeof actualizarLinkHistorial === 'function') {
+            actualizarLinkHistorial(true);
+        }
     }
 }
 
@@ -191,8 +195,12 @@ function ocultarUsuarioLogueado() {
         userInfo.style.display = 'none';
     }
     
-    // Ocultar link de historial
-    actualizarLinkHistorial(false);
+    // Ocultar links de usuario
+    if (typeof actualizarLinksUsuario === 'function') {
+        actualizarLinksUsuario(false);
+    } else if (typeof actualizarLinkHistorial === 'function') {
+        actualizarLinkHistorial(false);
+    }
     
     // Recargar página
     window.location.reload();

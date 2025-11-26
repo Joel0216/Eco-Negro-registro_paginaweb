@@ -1,11 +1,14 @@
-// Sistema de Pasarela de Pago Simulada
+// Sistema de Pasarela de Pago con Stripe
 
-// Simular procesamiento de pago con tarjeta
+// Configuración de Stripe
+const STRIPE_PUBLIC_KEY = 'pk_test_51SXVlNRaJEwIqKbp8DVnD5Ht8jI2iV5vVpVPYhlIcwx7faCwpDBqUiYIbyax8WaL3x4nhgSt8OujujNZQkhmNQ5300uy8QzliY';
+
+// Procesar pago con tarjeta usando Stripe
 async function procesarPagoTarjeta(producto, datosUsuario) {
     return new Promise((resolve, reject) => {
-        // Simular delay de procesamiento
+        // Por ahora simulamos el pago ya que necesitamos un backend para Stripe
+        // En producción, aquí se haría la llamada a tu backend que procesa con Stripe
         setTimeout(() => {
-            // Simular 95% de éxito
             const exito = Math.random() > 0.05;
             
             if (exito) {
@@ -22,7 +25,7 @@ async function procesarPagoTarjeta(producto, datosUsuario) {
                     error: 'Pago rechazado. Verifica los datos de tu tarjeta.'
                 });
             }
-        }, 2000); // 2 segundos de delay
+        }, 2000);
     });
 }
 

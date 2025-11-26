@@ -55,3 +55,31 @@ const productos = [
         popular: false
     }
 ];
+
+// Objetos disponibles en la tienda
+const objetos = [
+    {
+        id: 'chip_hiper_eco',
+        nombre: 'Chip de Hiper-Eco',
+        descripcion: 'Mejora tu eficiencia energética',
+        precio: 500,
+        imagen: 'objetos/Chip de Hiper-Eco.jpeg',
+        video: 'objetos/Chip de Hiper-Eco.mp4'
+    },
+    {
+        id: 'inhibidor_sonico',
+        nombre: 'Inhibidor Sónico',
+        descripcion: 'Controla las ondas sonoras',
+        precio: 750,
+        imagen: 'objetos/Inhibidor Sónico.png',
+        video: 'objetos/Inhibidor Sónico.mp4'
+    },
+    {
+        id: 'bateria_resonante',
+        nombre: 'Batería Resonante',
+        descripcion: 'Energía ilimitada para tus dispositivos',
+        precio: 1000,
+        imagen: 'objetos/Batería Resonante.png',
+        video: 'objetos/Batería Resonante.mp4'
+    }
+];

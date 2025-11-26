@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Eco Negro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #0A0E27;
+            color: white;
+        }
+        .test-section {
+            background: #1A1F3A;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #00FF41;
+        }
+        button {
+            background: #00FF41;
+            color: #0A0E27;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00D9FF;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Funcionalidades - Eco Negro</h1>
+    
+    <div class="test-section">
+        <h2>1. Test de Productos</h2>
+        <button onclick="testProductos()">Verificar Productos</button>
+        <div id="resultProductos" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test de Objetos</h2>
+        <button onclick="testObjetos()">Verificar Objetos</button>
+        <div id="resultObjetos" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test de Supabase</h2>
+        <button onclick="testSupabase()">Verificar Conexión</button>
+        <div id="resultSupabase" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Ir a la Aplicación</h2>
+        <button onclick="window.location.href='index.html'">Abrir Aplicación</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/productos.js"></script>
+    <script src="js/supabase.js"></script>
+    
+    <script>
+        function testProductos() {
+            const result = document.getElementById('resultProductos');
+            
+            if (typeof productos === 'undefined') {
+                result.innerHTML = '❌ ERROR: productos no está definido';
+                result.style.background = 'rgba(255, 51, 102, 0.2)';
+                return;
+            }
+            
+            result.innerHTML = `
+                ✅ Productos cargados correctamente<br>
+                📦 Total de productos: ${productos.length}<br>
+                <br>
+                <strong>Productos disponibles:</strong><br>
+                ${productos.map(p => `- ${p.nombre}: $${p.precio} (${p.monedas} monedas)`).join('<br>')}
+            `;
+            result.style.background = 'rgba(0, 255, 65, 0.2)';
+        }
+        
+        function testObjetos() {
+            const result = document.getElementById('resultObjetos');
+            
+            if (typeof objetos === 'undefined') {
+                result.innerHTML = '❌ ERROR: objetos no está definido';
+                result.style.background = 'rgba(255, 51, 102, 0.2)';
+                return;
+            }
+            
+            result.innerHTML = `
+                ✅ Objetos cargados correctamente<br>
+                🎮 Total de objetos: ${objetos.length}<br>
+                <br>
+                <strong>Objetos disponibles:</strong><br>
+                ${objetos.map(o => `- ${o.nombre}: ${o.precio} 💰`).join('<br>')}
+            `;
+            result.style.background = 'rgba(0, 255, 65, 0.2)';
+        }
+        
+        async function testSupabase() {
+            const result = document.getElementById('resultSupabase');
+            result.innerHTML = '⏳ Verificando conexión...';
+            
+            try {
+                if (typeof supabase === 'undefined') {
+                    throw new Error('Supabase no está inicializado');
+                }
+                
+                // Intentar obtener datos de la tabla players
+                const { data, error } = await supabase
+                    .from('players')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                result.innerHTML = `
+                    ✅ Conexión a Supabase exitosa<br>
+                    🔗 URL: ${SUPABASE_URL}<br>
+                    📊 Base de datos accesible
+                `;
+                result.style.background = 'rgba(0, 255, 65, 0.2)';
+                
+            } catch (error) {
+                result.innerHTML = `
+                    ❌ ERROR de conexión<br>
+                    ${error.message}
+                `;
+                result.style.background = 'rgba(255, 51, 102, 0.2)';
+            }
+        }
+        
+        // Auto-test al cargar
+        window.addEventListener('load', () => {
+            console.log('🧪 Página de test cargada');
+            console.log('Productos:', typeof productos !== 'undefined' ? productos.length : 'NO DEFINIDO');
+            console.log('Objetos:', typeof objetos !== 'undefined' ? objetos.length : 'NO DEFINIDO');
+            console.log('Supabase:', typeof supabase !== 'undefined' ? 'INICIALIZADO' : 'NO INICIALIZADO');
+        });
+    </script>
+</body>
+</html>

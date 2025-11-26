@@ -18,8 +18,10 @@
             </div>
             <nav class="nav">
                 <a href="#productos">Productos</a>
+                <a href="#tienda">Tienda</a>
                 <a href="#como-funciona">Cómo Funciona</a>
                 <a href="#" onclick="abrirHistorial(); return false;" id="historialLink" style="display: none;">Historial</a>
+                <a href="#" onclick="abrirModalInventario(); return false;" id="inventarioLink" style="display: none;">Inventario</a>
                 <a href="#soporte">Soporte</a>
             </nav>
             
@@ -68,6 +70,17 @@
             <p class="section-subtitle">Todos los paquetes incluyen monedas extra</p>
             <div class="productos-grid" id="productosGrid">
                 <!-- Los productos se cargan dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Tienda de Objetos -->
+    <section id="tienda" class="tienda">
+        <div class="container">
+            <h2 class="section-title">Tienda de Objetos</h2>
+            <p class="section-subtitle">Usa tus monedas para comprar objetos especiales</p>
+            <div class="objetos-grid" id="objetosGrid">
+                <!-- Los objetos se cargan dinámicamente -->
             </div>
         </div>
     </section>
@@ -369,13 +382,57 @@
         </div>
     </div>
 
+    <!-- Modal de Objeto -->
+    <div id="modalObjeto" class="modal">
+        <div class="modal-overlay" onclick="cerrarModalObjeto()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModalObjeto()">&times;</button>
+            <h2 class="modal-title" id="objetoNombre">Objeto</h2>
+            
+            <div class="objeto-preview">
+                <video id="objetoVideo" autoplay loop muted playsinline style="width: 100%; border-radius: 15px; margin-bottom: 20px;">
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="objeto-info">
+                <div class="objeto-precio-container">
+                    <span class="objeto-precio-label">Precio:</span>
+                    <span class="objeto-precio-valor" id="objetoPrecio">500 💰</span>
+                </div>
+                
+                <div id="objetoMensaje" style="margin: 20px 0; padding: 15px; border-radius: 10px; text-align: center;"></div>
+                
+                <button class="submit-button" id="btnComprarObjeto" onclick="comprarObjeto()">
+                    <span class="button-text">COMPRAR OBJETO</span>
+                    <span class="button-loader" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Inventario -->
+    <div id="modalInventario" class="modal">
+        <div class="modal-overlay" onclick="cerrarModalInventario()"></div>
+        <div class="modal-content" style="max-width: 800px;">
+            <button class="modal-close" onclick="cerrarModalInventario()">&times;</button>
+            <h2 class="modal-title">Mi Inventario</h2>
+            
+            <div id="inventarioContainer" class="inventario-grid">
+                <!-- Los objetos del inventario se cargan dinámicamente -->
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/productos.js"></script>
     <script src="js/supabase.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/payment.js"></script>
     <script src="js/historial.js"></script>
+    <script src="js/tienda.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

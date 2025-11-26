@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Eco Negro</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #0A0E27;
+            color: #00FF41;
+        }
+        .log {
+            background: #1A1F3A;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #00FF41;
+            border-radius: 3px;
+        }
+        .error {
+            border-left-color: #FF3366;
+            color: #FF3366;
+        }
+        .success {
+            border-left-color: #00FF41;
+        }
+        .warning {
+            border-left-color: #FFD700;
+            color: #FFD700;
+        }
+        button {
+            background: #00FF41;
+            color: #0A0E27;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Console - Eco Negro</h1>
+    <div id="console"></div>
+    
+    <div style="margin-top: 20px;">
+        <button onclick="window.location.href='index.html'">Ir a la Aplicación</button>
+        <button onclick="location.reload()">Recargar</button>
+    </div>
+
+    <!-- Scripts en el mismo orden que index.html -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/productos.js"></script>
+    
+    <script>
+        const consoleDiv = document.getElementById('console');
+        
+        function log(message, type = 'log') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleDiv.appendChild(div);
+            console.log(message);
+        }
+        
+        // Interceptar console.log
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            log(args.join(' '), 'success');
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            log(args.join(' '), 'error');
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            log(args.join(' '), 'warning');
+            originalWarn.apply(console, args);
+        };
+        
+        // Tests
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 DOM Cargado', 'success');
+            
+            // Test 1: Verificar productos
+            if (typeof productos === 'undefined') {
+                log('❌ ERROR: productos no está definido', 'error');
+            } else {
+                log(`✅ productos definido: ${productos.length} items`, 'success');
+                productos.forEach((p, i) => {
+                    log(`  ${i+1}. ${p.nombre} - $${p.precio}`, 'log');
+                });
+            }
+            
+            // Test 2: Verificar objetos
+            if (typeof objetos === 'undefined') {
+                log('❌ ERROR: objetos no está definido', 'error');
+            } else {
+                log(`✅ objetos definido: ${objetos.length} items`, 'success');
+                objetos.forEach((o, i) => {
+                    log(`  ${i+1}. ${o.nombre} - ${o.precio} monedas`, 'log');
+                });
+            }
+            
+            // Test 3: Verificar Supabase
+            if (typeof supabase === 'undefined') {
+                log('⚠️ WARNING: supabase no está definido', 'warning');
+            } else {
+                log('✅ supabase inicializado', 'success');
+            }
+            
+            log('✅ Todos los tests completados', 'success');
+        });
+    </script>
+</body>
+</html>

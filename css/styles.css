@@ -6,20 +6,24 @@
 }
 
 :root {
-    --bg-primary: #0A0E27;
-    --bg-surface: #1A1F3A;
-    --color-primary: #00FF41;
-    --color-secondary: #00D9FF;
+    --bg-primary: #000000;
+    --bg-surface: #0A0A0A;
+    --color-primary: #00D9FF;
+    --color-secondary: #0099FF;
     --color-error: #FF3366;
     --color-text: #FFFFFF;
-    --color-text-dim: #A0A0B0;
-    --glow-primary: 0 0 20px rgba(0, 255, 65, 0.5);
-    --glow-secondary: 0 0 20px rgba(0, 217, 255, 0.5);
+    --color-text-dim: #6B7280;
+    --glow-primary: 0 0 20px rgba(0, 217, 255, 0.6);
+    --glow-secondary: 0 0 20px rgba(0, 153, 255, 0.5);
 }
 
 body {
     font-family: 'Orbitron', sans-serif;
     background: var(--bg-primary);
+    background-image: 
+        linear-gradient(rgba(0, 217, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.1) 1px, transparent 1px);
+    background-size: 100px 100px;
     color: var(--color-text);
     line-height: 1.6;
     overflow-x: hidden;
@@ -33,7 +37,7 @@ body {
 
 /* Header */
 .header {
-    background: rgba(26, 31, 58, 0.95);
+    background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(10px);
     padding: 20px 0;
     position: sticky;
@@ -108,7 +112,7 @@ body {
     transform: translate(-50%, -50%);
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(0, 255, 65, 0.2), transparent);
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.3), transparent);
     filter: blur(80px);
     animation: pulse 4s ease-in-out infinite;
 }
@@ -146,23 +150,77 @@ body {
 }
 
 .cta-button {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: var(--bg-primary);
-    border: none;
+    background-image: url('../imagenes/contenedor_barras.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.8);
+    background-blend-mode: overlay;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
     padding: 18px 50px;
     font-size: 18px;
     font-weight: 900;
     font-family: 'Orbitron', sans-serif;
-    border-radius: 50px;
+    border-radius: 0;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: var(--glow-primary);
+    transition: all 0.4s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
     animation: slideDown 0.8s ease-out 0.4s both;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.9);
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 217, 255, 0.7) 50%, 
+        transparent 100%
+    );
+    transition: left 0.6s ease;
+}
+
+.cta-button:hover::before {
+    left: 100%;
 }
 
 .cta-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 30px rgba(0, 255, 65, 0.8);
+    transform: translateY(-3px) scale(1.02);
+    background-color: rgba(0, 217, 255, 0.2);
+    background-blend-mode: lighten;
+    border-color: var(--color-text);
+    box-shadow: 
+        0 0 30px rgba(0, 217, 255, 0.9),
+        0 0 50px rgba(0, 217, 255, 0.6),
+        0 0 70px rgba(0, 153, 255, 0.4),
+        inset 0 0 30px rgba(0, 217, 255, 0.4);
+    color: var(--color-text);
+    text-shadow: 
+        0 0 15px rgba(0, 217, 255, 1),
+        0 0 25px rgba(0, 217, 255, 0.9);
+    animation: buttonPulse 1s ease-in-out infinite;
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 30px rgba(0, 217, 255, 0.9),
+            0 0 50px rgba(0, 217, 255, 0.6);
+    }
+    50% {
+        box-shadow: 
+            0 0 40px rgba(0, 217, 255, 1),
+            0 0 70px rgba(0, 217, 255, 0.8),
+            0 0 100px rgba(0, 153, 255, 0.5);
+    }
 }
 
 /* Secciones */
@@ -196,13 +254,14 @@ body {
 
 .producto-card {
     background: var(--bg-surface);
-    border: 2px solid transparent;
+    border: 2px solid var(--color-primary);
     border-radius: 20px;
     padding: 30px;
     text-align: center;
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
 }
 
 .producto-card::before {
@@ -228,7 +287,7 @@ body {
 
 .producto-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 10px 40px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 217, 255, 0.3);
 }
 
 .producto-card.popular {
@@ -251,7 +310,7 @@ body {
 .producto-icono {
     font-size: 60px;
     margin-bottom: 20px;
-    filter: drop-shadow(0 0 10px rgba(0, 255, 65, 0.5));
+    filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.5));
 }
 
 .producto-nombre {
@@ -282,41 +341,62 @@ body {
 
 .btn-comprar {
     width: 100%;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: var(--bg-primary);
-    border: none;
+    background-image: url('../imagenes/contenedor_barras.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.8);
+    background-blend-mode: overlay;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
     padding: 15px;
     font-size: 16px;
     font-weight: 900;
     font-family: 'Orbitron', sans-serif;
-    border-radius: 10px;
+    border-radius: 0;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.4s ease;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.9);
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
 
 .btn-comprar::before {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 217, 255, 0.6) 50%, 
+        transparent 100%
+    );
+    transition: left 0.6s ease;
 }
 
 .btn-comprar:hover::before {
-    width: 300px;
-    height: 300px;
+    left: 100%;
 }
 
 .btn-comprar:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0, 255, 65, 0.8), 0 0 60px rgba(0, 217, 255, 0.4);
+    transform: scale(1.03);
+    background-color: rgba(0, 217, 255, 0.2);
+    background-blend-mode: lighten;
+    border-color: var(--color-text);
+    color: var(--color-text);
+    box-shadow: 
+        0 0 25px rgba(0, 217, 255, 1),
+        0 0 45px rgba(0, 217, 255, 0.7),
+        0 0 65px rgba(0, 153, 255, 0.5),
+        inset 0 0 20px rgba(0, 217, 255, 0.4);
+    text-shadow: 
+        0 0 12px rgba(0, 217, 255, 1),
+        0 0 20px rgba(0, 217, 255, 0.9);
+    animation: buttonPulse 1s ease-in-out infinite;
 }
 
 /* Cómo Funciona */
@@ -394,7 +474,7 @@ body {
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 0 50px rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 50px rgba(0, 217, 255, 0.5);
     animation: modalSlideIn 0.3s ease-out;
 }
 
@@ -523,27 +603,71 @@ body {
 }
 
 .submit-button {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: var(--bg-primary);
-    border: none;
+    background-image: url('../imagenes/contenedor_barras.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.8);
+    background-blend-mode: overlay;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
     padding: 18px;
     font-size: 18px;
     font-weight: 900;
     font-family: 'Orbitron', sans-serif;
-    border-radius: 10px;
+    border-radius: 0;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.4s ease;
     margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.9);
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.submit-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 217, 255, 0.7) 50%, 
+        transparent 100%
+    );
+    transition: left 0.6s ease;
+}
+
+.submit-button:hover:not(:disabled)::before {
+    left: 100%;
 }
 
 .submit-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+    transform: translateY(-2px) scale(1.02);
+    background-color: rgba(0, 217, 255, 0.2);
+    background-blend-mode: lighten;
+    border-color: var(--color-text);
+    color: var(--color-text);
+    box-shadow: 
+        0 0 30px rgba(0, 217, 255, 1),
+        0 0 50px rgba(0, 217, 255, 0.7),
+        0 0 70px rgba(0, 153, 255, 0.5),
+        inset 0 0 25px rgba(0, 217, 255, 0.4);
+    text-shadow: 
+        0 0 15px rgba(0, 217, 255, 1),
+        0 0 25px rgba(0, 217, 255, 0.9);
+    animation: buttonPulse 1s ease-in-out infinite;
 }
 
 .submit-button:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: not-allowed;
+    filter: grayscale(100%);
+    color: var(--color-text-dim);
+    text-shadow: none;
 }
 
 .button-loader {
@@ -686,7 +810,7 @@ body {
 
 .btn-register:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
 }
 
 /* Info de usuario logueado */
@@ -890,7 +1014,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding-top: 15px;
-    border-top: 1px solid rgba(0, 255, 65, 0.2);
+    border-top: 1px solid rgba(0, 217, 255, 0.2);
     font-size: 12px;
 }
 
@@ -1234,7 +1358,7 @@ body {
     border: 2px solid var(--color-primary);
     border-radius: 15px;
     min-width: 250px;
-    box-shadow: 0 10px 40px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 217, 255, 0.3);
     z-index: 1000;
     animation: dropdownSlideIn 0.3s ease-out;
 }
@@ -1256,7 +1380,7 @@ body {
 
 .dropdown-header {
     padding: 15px;
-    border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
     margin-bottom: 5px;
 }
 
@@ -1285,7 +1409,7 @@ body {
 }
 
 .dropdown-item:hover {
-    background: rgba(0, 255, 65, 0.1);
+    background: rgba(0, 217, 255, 0.1);
     color: var(--color-primary);
     transform: translateX(5px);
 }
@@ -1297,7 +1421,7 @@ body {
 
 .dropdown-divider {
     height: 1px;
-    background: rgba(0, 255, 65, 0.2);
+    background: rgba(0, 217, 255, 0.2);
     margin: 5px 0;
 }
 
@@ -1342,4 +1466,302 @@ body {
 
 .user-info {
     display: none !important;
+}
+
+
+/* ========== EFECTOS DE ILUMINACIÓN ELÉCTRICA PARA BOTONES ========== */
+
+/* Animación de pulso eléctrico */
+@keyframes electricPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 10px rgba(0, 217, 255, 0.4),
+            0 0 20px rgba(0, 217, 255, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 20px rgba(0, 217, 255, 0.6),
+            0 0 40px rgba(0, 217, 255, 0.4),
+            0 0 60px rgba(0, 217, 255, 0.3);
+    }
+}
+
+/* Animación de circuitos activándose */
+@keyframes circuitActivation {
+    0% {
+        filter: brightness(1) contrast(1);
+    }
+    25% {
+        filter: brightness(1.3) contrast(1.2);
+    }
+    50% {
+        filter: brightness(1.5) contrast(1.3);
+    }
+    75% {
+        filter: brightness(1.3) contrast(1.2);
+    }
+    100% {
+        filter: brightness(1) contrast(1);
+    }
+}
+
+/* Animación de energía fluyendo */
+@keyframes energyFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Efecto de chispa eléctrica en hover */
+.btn-comprar::after,
+.submit-button::after,
+.cta-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-comprar:hover::after,
+.submit-button:hover:not(:disabled)::after,
+.cta-button:hover::after {
+    animation: sparkExplosion 0.6s ease-out;
+}
+
+@keyframes sparkExplosion {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(6);
+        opacity: 0;
+    }
+}
+
+/* Efecto de líneas eléctricas en los bordes */
+.btn-comprar,
+.submit-button,
+.cta-button {
+    background-image: 
+        linear-gradient(90deg, transparent 0%, transparent 100%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+}
+
+.btn-comprar:hover,
+.submit-button:hover:not(:disabled),
+.cta-button:hover {
+    background-position: 0 0;
+    animation: electricPulse 1.5s ease-in-out infinite;
+}
+
+/* Efecto de resplandor en el texto */
+.btn-comprar:hover,
+.submit-button:hover:not(:disabled),
+.cta-button:hover {
+    text-shadow: 
+        0 0 10px rgba(0, 217, 255, 0.8),
+        0 0 20px rgba(0, 217, 255, 0.6),
+        0 0 30px rgba(0, 217, 255, 0.4);
+}
+
+/* Partículas eléctricas flotantes */
+@keyframes floatingParticles {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-20px) translateX(10px);
+        opacity: 0;
+    }
+}
+
+
+/* ========== EFECTOS ADICIONALES PARA BOTONES CON IMAGEN ========== */
+
+/* Efecto de escaneo horizontal */
+.cta-button::after,
+.btn-comprar::after,
+.submit-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--color-primary) 50%, 
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cta-button:hover::after,
+.btn-comprar:hover::after,
+.submit-button:hover:not(:disabled)::after {
+    opacity: 1;
+    animation: scanLine 1.5s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+    0% {
+        top: 0;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* Efecto de bordes brillantes */
+.cta-button,
+.btn-comprar,
+.submit-button {
+    box-shadow: 
+        0 0 15px rgba(0, 217, 255, 0.3),
+        inset 0 0 10px rgba(0, 217, 255, 0.1);
+}
+
+.cta-button:hover,
+.btn-comprar:hover,
+.submit-button:hover:not(:disabled) {
+    animation: buttonPulse 1s ease-in-out infinite, circuitActivation 2s ease-in-out infinite;
+}
+
+/* Efecto de ondas expansivas al hacer clic */
+@keyframes rippleEffect {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.cta-button:active::before,
+.btn-comprar:active::before,
+.submit-button:active::before {
+    animation: rippleEffect 0.6s ease-out;
+}
+
+/* Partículas flotantes alrededor del botón */
+.cta-button:hover,
+.btn-comprar:hover,
+.submit-button:hover:not(:disabled) {
+    position: relative;
+}
+
+/* Efecto de destello en las esquinas */
+@keyframes cornerFlash {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Mejora del clip-path para efecto futurista */
+.cta-button,
+.btn-comprar,
+.submit-button {
+    position: relative;
+}
+
+.cta-button:hover,
+.btn-comprar:hover,
+.submit-button:hover:not(:disabled) {
+    filter: brightness(1.2) saturate(1.3);
+}
+
+/* Efecto de texto parpadeante */
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 
+            0 0 10px rgba(0, 217, 255, 0.8),
+            0 0 20px rgba(0, 217, 255, 0.6);
+    }
+    50% {
+        text-shadow: 
+            0 0 20px rgba(0, 217, 255, 1),
+            0 0 30px rgba(0, 217, 255, 0.8),
+            0 0 40px rgba(0, 217, 255, 0.6);
+    }
+}
+
+.cta-button:hover,
+.btn-comprar:hover,
+.submit-button:hover:not(:disabled) {
+    animation: buttonPulse 1s ease-in-out infinite, textGlow 1.5s ease-in-out infinite;
+}
+
+/* Efecto de energía acumulándose */
+@keyframes energyCharge {
+    0% {
+        box-shadow: 
+            0 0 15px rgba(0, 217, 255, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px rgba(0, 217, 255, 0.6),
+            0 0 50px rgba(0, 217, 255, 0.4);
+    }
+    100% {
+        box-shadow: 
+            0 0 40px rgba(0, 217, 255, 0.9),
+            0 0 70px rgba(0, 217, 255, 0.6),
+            0 0 100px rgba(0, 217, 255, 0.4);
+    }
+}
+
+/* Transición suave al entrar en hover */
+.cta-button,
+.btn-comprar,
+.submit-button {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de sombra dinámica */
+.cta-button:hover,
+.btn-comprar:hover,
+.submit-button:hover:not(:disabled) {
+    box-shadow: 
+        0 5px 30px rgba(0, 217, 255, 0.8),
+        0 10px 50px rgba(0, 217, 255, 0.5),
+        0 15px 70px rgba(0, 217, 255, 0.3),
+        inset 0 0 30px rgba(0, 217, 255, 0.3),
+        inset 0 2px 10px rgba(255, 255, 255, 0.2);
 }

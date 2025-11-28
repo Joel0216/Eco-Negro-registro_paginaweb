@@ -19,6 +19,7 @@
             <nav class="nav">
                 <a href="#productos">Productos</a>
                 <a href="#tienda">Tienda</a>
+                <a href="#conocenos">Conócenos</a>
                 <a href="#como-funciona">Cómo Funciona</a>
             </nav>
             
@@ -152,6 +153,46 @@
             <p class="section-subtitle">Usa tus monedas para comprar objetos especiales</p>
             <div class="objetos-grid" id="objetosGrid">
                 <!-- Los objetos se cargan dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Conócenos -->
+    <section id="conocenos" class="conocenos">
+        <div class="container">
+            <h2 class="section-title">Conócenos</h2>
+            <div class="conocenos-content">
+                <div class="conocenos-text">
+                    <p class="conocenos-description">
+                        Somos un pequeño equipo de desarrolladores que tuvimos una idea conjunta de crear un videojuego. 
+                        Cada uno se especializó en una parte del juego: uno en la banda sonora, otro en el desarrollo visual y movimientos, 
+                        otro en el HUD y desarrollo del código, y otro en el desarrollo de productos para el juego. 
+                        Cada uno le dimos un poco de cada uno, le pusimos aventura, misterio, música y curiosidad. 
+                        Esperamos que disfrutes el juego, nos esforzamos para que se vea bien y que se vea cada vez mejor con cada actualización.
+                    </p>
+                </div>
+                <div class="conocenos-video">
+                    <h3 class="video-title">Trailer del Juego</h3>
+                    <div class="video-container">
+                        <video 
+                            id="trailerVideo"
+                            class="trailer-video"
+                            controls
+                            preload="metadata"
+                            poster="imagenes/video-poster.jpg">
+                            <source src="videos/trailer.mp4" type="video/mp4">
+                            Tu navegador no soporta la reproducción de videos.
+                        </video>
+                        <div class="video-overlay" id="videoOverlay">
+                            <button class="play-button" id="playButton">
+                                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                                    <circle cx="40" cy="40" r="38" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M32 25L55 40L32 55V25Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -504,6 +545,7 @@
     <script src="js/payment.js"></script>
     <script src="js/historial.js"></script>
     <script src="js/tienda.js"></script>
+    <script src="js/video.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
